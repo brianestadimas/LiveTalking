@@ -123,14 +123,21 @@ async def offer(request):
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
 
-    #return jsonify({"sdp": pc.localDescription.sdp, "type": pc.localDescription.type})
+    # 🔵  wait until ICE gathering is complete so SDP contains candidates
+    while pc.iceGatheringState != "complete":
+        await asyncio.sleep(0.1)
 
     return web.Response(
         content_type="application/json",
         text=json.dumps(
-            {"sdp": pc.localDescription.sdp, "type": pc.localDescription.type, "sessionid":sessionid}
+            {
+                "sdp": pc.localDescription.sdp,   # ← now includes candidates
+                "type": pc.localDescription.type,
+                "sessionid": sessionid,
+            }
         ),
     )
+
 
 async def human(request):
     params = await request.json()
