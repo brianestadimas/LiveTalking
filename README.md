@@ -11,7 +11,7 @@ https://github.com/TMElyralab/MuseTalk/assets/163980830/37a3a666-7b90-4244-8d3a-
 https://github.com/user-attachments/assets/6eb4e70e-9e19-48e9-85a9-bbfa589c5fcb
 
 </td>
-<td width="40%">
+<td width="33%">
 
 ### LiveTalk + MuseTalk 1.0
 ---
@@ -24,7 +24,7 @@ https://github.com/user-attachments/assets/3c78064e-faad-4637-83ae-28452a22b09a
 </tr>
 </table>
 
-![Platform](figures/fig1.png)
+![Platform](figures/fig1.jpg)
 
 [Effect of wav2lip](https://www.bilibili.com/video/BV1scwBeyELA/) | [Effect of ernerf](https://www.bilibili.com/video/BV1G1421z73r/) |  [Effect of musetalk](https://www.bilibili.com/video/BV1gm421N7vQ/)  
 
