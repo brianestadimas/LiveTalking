@@ -13,6 +13,7 @@ dearpygui
 packaging
 scipy
 scikit-learn
+# torch==2.4.0
 
 face_alignment
 python_speech_features

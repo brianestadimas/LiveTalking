@@ -1,21 +1,4 @@
-###############################################################################
-#  Copyright (C) 2024 LiveTalking@lipku https://github.com/lipku/LiveTalking
-#  email: lipku@foxmail.com
-# 
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#  
-#       http://www.apache.org/licenses/LICENSE-2.0
-# 
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-###############################################################################
 
-# server.py
 from flask import Flask, render_template,send_from_directory,request, jsonify
 from flask_sockets import Sockets
 import base64
@@ -87,7 +70,7 @@ async def offer(request):
 
     if len(nerfreals) >= opt.max_session:
         logger.info('reach max session')
-        return -1
+        return web.json_response({"error": "Maximum session reached"}, status=429)
     sessionid = randN(6) #len(nerfreals)
     logger.info('sessionid=%d',sessionid)
     nerfreals[sessionid] = None
@@ -305,7 +288,7 @@ if __name__ == '__main__':
 
     ### dataset options
     parser.add_argument('--color_space', type=str, default='srgb', help="Color space, supports (linear, srgb)")
-    parser.add_argument('--preload', type=int, default=0, help="0 means load data from disk on-the-fly, 1 means preload to CPU, 2 means GPU.")
+    parser.add_argument('--preload', type=int, default=2, help="0 means load data from disk on-the-fly, 1 means preload to CPU, 2 means GPU.")
     # (the default value is for the fox dataset)
     parser.add_argument('--bound', type=float, default=1, help="assume the scene is bounded in box[-bound, bound]^3, if > 1, will invoke adaptive ray marching.")
     parser.add_argument('--scale', type=float, default=4, help="scale camera location into box[-bound, bound]^3")
@@ -325,8 +308,8 @@ if __name__ == '__main__':
 
     ### GUI options
     parser.add_argument('--gui', action='store_true', help="start a GUI")
-    parser.add_argument('--W', type=int, default=450, help="GUI width")
-    parser.add_argument('--H', type=int, default=450, help="GUI height")
+    parser.add_argument('--W', type=int, default=550, help="GUI width")
+    parser.add_argument('--H', type=int, default=550, help="GUI height")
     parser.add_argument('--radius', type=float, default=3.35, help="default GUI camera radius from center")
     parser.add_argument('--fovy', type=float, default=21.24, help="default GUI camera fovy")
     parser.add_argument('--max_spp', type=int, default=1, help="GUI rendering max sample per pixel")
@@ -397,7 +380,7 @@ if __name__ == '__main__':
     parser.add_argument('--transport', type=str, default='rtcpush') #rtmp webrtc rtcpush
     parser.add_argument('--push_url', type=str, default='http://localhost:1985/rtc/v1/whip/?app=live&stream=livestream') #rtmp://localhost/live/livestream
 
-    parser.add_argument('--max_session', type=int, default=1)  #multi session count
+    parser.add_argument('--max_session', type=int, default=3)  #multi session count
     parser.add_argument('--listenport', type=int, default=8010)
 
     opt = parser.parse_args()

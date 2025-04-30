@@ -1,55 +1,48 @@
-# Copyright (c) 2020-2022, NVIDIA CORPORATION.  All rights reserved.
-#
-# NVIDIA CORPORATION and its licensors retain all intellectual property
-# and proprietary rights in and to this software, related documentation
-# and any modifications thereto.  Any use, reproduction, disclosure or
-# distribution of this software and related documentation without an express
-# license agreement from NVIDIA CORPORATION is strictly prohibited.
+# ───────────────────────────────────────────────────────────────
+# CUDA-runtime base image (Ubuntu 22.04, CUDA 12.2, requires NVIDIA Container Toolkit on host)
+# ───────────────────────────────────────────────────────────────
+FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04
 
-ARG BASE_IMAGE=nvcr.io/nvidia/cuda:11.6.1-cudnn8-devel-ubuntu20.04
-FROM $BASE_IMAGE
+# ---------- system packages ----------
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv python3-dev \
+        git curl wget ffmpeg libgl1 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update -yq --fix-missing \
- && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-    pkg-config \
-    wget \
-    cmake \
-    curl \
-    git \
-    vim
+# ---------- isolate deps in a venv ----------
+ENV VENV_PATH=/opt/venv
+RUN python3 -m venv ${VENV_PATH}
+ENV PATH=${VENV_PATH}/bin:$PATH
 
-#ENV PYTHONDONTWRITEBYTECODE=1
-#ENV PYTHONUNBUFFERED=1
+# ---------- python deps ----------
+WORKDIR /workspace
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# nvidia-container-runtime
-#ENV NVIDIA_VISIBLE_DEVICES all
-#ENV NVIDIA_DRIVER_CAPABILITIES compute,utility,graphics
+RUN pip install gdown
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN sh Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
-RUN ~/miniconda3/bin/conda init
-RUN source ~/.bashrc
-RUN conda create -n nerfstream python=3.10
-RUN conda activate nerfstream
 
-RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
-# install depend
-RUN conda install pytorch==1.12.1 torchvision==0.13.1 cudatoolkit=11.3 -c pytorch
-Copy requirements.txt ./
-RUN pip install -r requirements.txt
+# ---------- project source ----------
+COPY . /workspace
 
-# additional libraries
-RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git"
-RUN pip install tensorflow-gpu==2.8.0
+# ---------- download model & avatar assets ----------
+# (gdown is in requirements.txt)
+RUN gdown --id 1Z8J3CglXPy3bih8vTFhL7jR0tGcsK7mF -O models/wav2lip.pth && \
+    mkdir -p data/avatars && \
+    gdown --id 1w7dHHpTJ-1Ikg5m7FoZkqZqQCXdHmqbW -O /tmp/avatar.tar.gz && \
+    tar -xzf /tmp/avatar.tar.gz -C data/avatars && \
+    rm /tmp/avatar.tar.gz
 
-RUN pip uninstall protobuf
-RUN pip install protobuf==3.20.1
+# ---------- runtime configuration ----------
+EXPOSE 8010
+EXPOSE 1935 8080
+ENV TRANSPORT=webrtc
+ENV MODEL=wav2lip
+ENV AVATAR_ID=wav2lip256_avatar1
 
-RUN conda install ffmpeg
-Copy ../python_rtmpstream /python_rtmpstream
-WORKDIR /python_rtmpstream/python
-RUN pip install .
-
-Copy ../nerfstream /nerfstream
-WORKDIR /nerfstream
-CMD ["python3", "app.py"]
+# ---------- entrypoint ----------
+# Use exec-form so the Python process receives signals directly
+ENTRYPOINT ["bash", "-c", "python app.py --transport ${TRANSPORT} --model ${MODEL} --avatar_id ${AVATAR_ID}"]
