@@ -4,25 +4,33 @@
 Real-time interactive streaming digital human enables synchronous audio and video dialogue. It can basically achieve commercial effects.
 
 ### Input Video
----
-https://github.com/TMElyralab/MuseTalk/assets/163980830/37a3a666-7b90-4244-8d3a-058cb0e44107
+<table>
+<tr>
+<td width="33%">
 
----
-https://github.com/user-attachments/assets/6eb4e70e-9e19-48e9-85a9-bbfa589c5fcb
+### Input Video
+
+<video src="https://github.com/TMElyralab/MuseTalk/assets/163980830/37a3a666-7b90-4244-8d3a-058cb0e44107" controls width="100%"></video>
+
+<br/>
+
+<video src="https://github.com/user-attachments/assets/6eb4e70e-9e19-48e9-85a9-bbfa589c5fcb" controls width="100%"></video>
 
 </td>
 <td width="33%">
 
 ### LiveTalk + MuseTalk 1.0
----
-https://github.com/user-attachments/assets/c04f3cd5-9f77-40e9-aafd-61978380d0ef
 
----
-https://github.com/user-attachments/assets/3c78064e-faad-4637-83ae-28452a22b09a
+<video src="https://github.com/user-attachments/assets/c04f3cd5-9f77-40e9-aafd-61978380d0ef" controls width="100%"></video>
+
+<br/>
+
+<video src="https://github.com/user-attachments/assets/3c78064e-faad-4637-83ae-28452a22b09a" controls width="100%"></video>
 
 </td>
 </tr>
 </table>
+
 
 ![Platform](figures/fig1.jpg)
 
